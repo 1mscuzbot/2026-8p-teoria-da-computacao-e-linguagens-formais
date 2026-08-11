@@ -133,6 +133,33 @@ Uma **ER** sobre um alfabeto Σ gera uma linguagem conforme a tabela abaixo (ρ 
 3. Parênteses externos podem ser omitidos
 4. **Prioridade:** fecho de Kleene (`*`) > concatenação (`.`) > união (`+`)
 
+## Exemplos resolvidos (Σ = {a,b})
+
+| # | Expressão | Linguagem (o que ela representa) |
+|----|-----------|----------------------------------|
+| 1 | L = ∅ | linguagem **vazia** — nenhuma palavra pertence |
+| 2 | L = {ε} | apenas a **palavra vazia** |
+| 3 | L = {a,b} = {a} ∪ {b} | união: a palavra "a" ou a palavra "b" |
+| 4 | L = {aa} = {a}×{a} | concatenação: "aa" |
+| 5 | L = {a,b}×{b,c} | concatenação (produto): {ab, ac, bb, bc} |
+| 6 | a\* | {ε, a, aa, aaa, …} — **0 ou mais** repetições de `a` |
+| 7 | a+ | {a, aa, aaa, …} — **1 ou mais** repetições de `a` (a+ = a·a\*) |
+| 8 | (a+b)\* | **todas** as palavras sobre {a,b}, incluindo ε |
+| 9 | (ab)\* | {ε, ab, abab, ababab, …} — repetições de "ab" |
+| 10 | b+a\* | (b+)(a\*) = {bⁱaʲ \| i≥1, j≥0} — **um ou mais b's** seguidos de a's (ex.: b, bb, ba, bba, bbaa) |
+| 11 | (b+a)\* | blocos "b⁺" ou "a" repetidos; como todo bloco de b's pode ser seu próprio bloco, **equivale a {a,b}\*** |
+| 12 | ba\* | {b·aʲ \| j≥0} = {b, ba, baa, baaa, …} — um `b` seguido de a's |
+| 13 | (ba)\* | {ε, ba, baba, bababa, …} — repetições de "ba" |
+| 14 | (a+b\*)\* | blocos "a" ou "b\*" repetidos; equivale a **{a,b}\*** (cada a é um bloco, cada run de b's é um bloco b\*) |
+| 15 | a\* + b\* | {aⁱ \| i≥0} ∪ {bʲ \| j≥0} — **só a's ou só b's** (não mistura; inclui ε) |
+| 16 | a\*.b\* | {aⁱbʲ \| i,j ≥ 0} — a's seguidos de b's (ex.: ε, a, b, ab, aab, abb) |
+| 17 | (a+b)² | todas as palavras de comprimento exatamente 2: {aa, ab, ba, bb} |
+| 18 | (ab)² | (ab)(ab) = **{abab}** |
+| 19 | a².b² | **{aabb}** |
+| 20 | (a+b)³ | todas as palavras de comprimento exatamente 3: {aaa, aab, aba, abb, baa, bab, bba, bbb} (2³ = 8) |
+| 21 | a⁰⁻⁵ | {a⁰, a¹, a², a³, a⁴, a⁵} = {ε, a, aa, aaa, aaaa, aaaaa} — de 0 a 5 a's |
+| 22 | a³.b⁴ | **{aaabbbb}** — 3 a's seguidos de 4 b's |
+
 ## Exercícios resolvidos
 
 ### 1–10: descrever as linguagens das ERs
