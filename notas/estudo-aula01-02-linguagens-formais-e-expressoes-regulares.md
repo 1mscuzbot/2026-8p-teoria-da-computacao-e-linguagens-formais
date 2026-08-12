@@ -164,18 +164,18 @@ Uma **ER** sobre um alfabeto Σ gera uma linguagem conforme a tabela abaixo (ρ 
 
 ### 1–10: descrever as linguagens das ERs
 
-| # | ER | Linguagem (conjunto de palavras) |
-|----|-----|----------------------------------|
-| 1 | (a+b+c)\* | **todas** as strings sobre {a,b,c}, incluindo ε |
-| 2 | (bc)\* | {ε, bc, bcbc, bcbcbc, …} — repetições de "bc" |
-| 3 | b\* + c\* | {b^k \| k≥0} ∪ {c^k \| k≥0} — só b's **ou** só c's (sem misturar) |
-| 4 | a\*·c\* | {aⁱcʲ \| i,j ≥ 0} — a's seguidos de c's (ex.: ε, a, c, ac, aac, acc) |
-| 5 | (a+b+c)³ | todas as 27 palavras de comprimento exatamente 3 |
-| 6 | (abc)³ | {abcabcabc} — uma única palavra |
-| 7 | a³·b²·c⁴ | {aaabbcccc} — uma única palavra |
-| 8 | a + b³ | {a, bbb} — a palavra "a" ou a palavra "bbb" |
-| 9 | (ab)^(0-3) | {ε, ab, abab, ababab} |
-| 10 | a·(a+b)\*·b | strings que **começam com `a` e terminam com `b`** (com qualquer meio) |
+| # | ER | Linguagem (conjunto de palavras) | Exemplos de palavras |
+|----|-----|----------------------------------|----------------------|
+| 1 | (a+b+c)\* | **todas** as strings sobre {a,b,c}, incluindo ε | ε, a, c, abc, cba, aabbcc |
+| 2 | (bc)\* | {ε, bc, bcbc, bcbcbc, …} — repetições de "bc" | ε, bc, bcbc, bcbcbc |
+| 3 | b\* + c\* | {b^k \| k≥0} ∪ {c^k \| k≥0} — só b's **ou** só c's (sem misturar) | ε, b, c, bb, ccc; **não**: bc, bcb |
+| 4 | a\*·c\* | {aⁱcʲ \| i,j ≥ 0} — a's seguidos de c's | ε, a, c, ac, aac, acc, aacc |
+| 5 | (a+b+c)³ | todas as 27 palavras de comprimento exatamente 3 | aaa, aab, abc, cba, ccc; **não**: ε, aa, abcd |
+| 6 | (abc)³ | {abcabcabc} — uma única palavra | abcabcabc (única) |
+| 7 | a³·b²·c⁴ | {aaabbcccc} — uma única palavra | aaabbcccc (única) |
+| 8 | a + b³ | {a, bbb} — a palavra "a" ou a palavra "bbb" | a, bbb; **não**: ab, bb, aa |
+| 9 | (ab)^(0-3) | {ε, ab, abab, ababab} | ε, ab, abab, ababab; **não**: aba, ababa, abababab |
+| 10 | a·(a+b)\*·b | strings que **começam com `a` e terminam com `b`** (com qualquer meio) | ab, aaab, abab, aabb; **não**: a, b, aba |
 
 ### 23: retirar o máximo de parênteses sem mudar o significado
 
