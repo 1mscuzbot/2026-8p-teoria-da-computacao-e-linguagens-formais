@@ -32,7 +32,7 @@ Alfabeto Σ={a,b}. A "parte positiva" é o trecho fixo; `(a+b)*` preenche o rest
 | 2 | palavras **terminadas em** "ab" | `(a+b)*ab` |
 | 3 | palavras que **possuem** a sequência "ab" | `(a+b)*ab(a+b)*` |
 | 4 | palavras com **"b" na 3ª posição** | `(a+b)(a+b)b(a+b)*` |
-| 5 | começam com "ab" **e** terminam com "ba" | `ab(a+b)*ba` |
+| 5 | começam com "ab" **e** terminam com "ba" | `ab(a+b)*ba + aba` |
 | 6 | começam por "ba" **ou** "ab" | `(ba+ab)(a+b)*` |
 | 7 | **número par** de a's | `(b*ab*ab*)*` |
 | 8 | iniciadas com **quantidade par** de a's | `(aa)*(ε+b(a+b)*)` |
@@ -46,6 +46,7 @@ Alfabeto Σ={a,b}. A "parte positiva" é o trecho fixo; `(a+b)*` preenche o rest
 | 16 | possuem **no máximo 2** a's | `b*(a+ε)b*(a+ε)b*` |
 
 **Por quê:**
+- **5:** cuidado com a sobreposição — a palavra `aba` começa com "ab" e termina com "ba" (só 3 letras). Como `ab(a+b)*ba` exige no mínimo 4 (ab + ba), a palavra "aba" precisa ser somada à parte: `ab(a+b)*ba + aba`.
 - **7:** cada repetição `b*ab*ab*` acrescenta 2 a's (par); o grupo `(...)*` repete 0+ vezes → sempre par.
 - **8:** `(aa)*` consome os a's do início aos pares; depois ou acaba ou segue um `b`.
 - **12:** `b*a+b+a*` — a única transição `a→b` ocorre entre `a+` e `b+`, gerando um único "ab".
