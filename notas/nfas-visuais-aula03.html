@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teoria — NFAs visuais (Aula 03)</title>
+  <style>
+    :root {
+      --bg: #f7f4ef;
+      --ink: #1a1a1a;
+      --line: #2c3e50;
+      --final: #0d5c4d;
+      --accent: #b85c38;
+      --card: #fffdf9;
+      --muted: #5a5a5a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(ellipse at 20% 0%, #ebe4d8 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 20%, #e0ebe6 0%, transparent 40%),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.45;
+      padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 3rem;
+    }
+    h1 {
+      font-family: "IBM Plex Serif", Georgia, serif;
+      font-weight: 600;
+      font-size: clamp(1.6rem, 4vw, 2.1rem);
+      margin: 0 0 0.35rem;
+      letter-spacing: -0.02em;
+    }
+    .lead { color: var(--muted); max-width: 42rem; margin: 0 0 1.75rem; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 1.25rem 1.75rem;
+      margin-bottom: 2rem; font-size: 0.92rem;
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 0.45rem; }
+    .dot {
+      width: 22px; height: 22px; border: 2.5px solid var(--line);
+      border-radius: 50%; display: inline-block;
+    }
+    .dot.final { border-width: 2.5px; box-shadow: inset 0 0 0 3px var(--card), inset 0 0 0 5.5px var(--final); border-color: var(--final); }
+    .dot.start::before {
+      content: ""; width: 14px; height: 2px; background: var(--line);
+      display: inline-block; margin-right: 2px;
+    }
+    article {
+      background: var(--card);
+      border: 1px solid #e4ddd2;
+      border-radius: 4px;
+      padding: 1.25rem 1.25rem 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    article h2 {
+      font-size: 1.05rem;
+      margin: 0 0 0.25rem;
+      font-weight: 600;
+    }
+    article .er {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      color: var(--accent);
+      font-size: 0.95rem;
+      margin: 0 0 0.75rem;
+    }
+    .hint {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin: 0.5rem 0 0.75rem;
+      border-top: 1px dashed #ddd5c8;
+      padding-top: 0.65rem;
+    }
+    svg { width: 100%; height: auto; display: block; }
+    .test { font-size: 0.88rem; color: var(--muted); }
+    .test b { color: var(--ink); font-weight: 600; }
+    footer { font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>NFAs visuais — Aula 03</h1>
+  <p class="lead">Exercícios no estilo da provinha: desenhar o autômato. Círculo duplo = final · seta solta = inicial.</p>
+  <p style="font-size:0.9rem;margin:-0.75rem 0 1.5rem"><a href="nfas-visuais-aula04.html" style="color:#b85c38">Aula 04 (ε) →</a> · <a href="nfas-visuais-aula05.html" style="color:#b85c38">Aula 05 (NFA→DFA) →</a></p>
+
+  <div class="legend">
+    <span><i class="dot"></i> estado</span>
+    <span><i class="dot final"></i> estado final</span>
+    <span>→ rótulo = símbolo lido (ε = vazio)</span>
+  </div>
+
+  <!-- 1. ab + ba -->
+  <article>
+    <h2>1. União de duas palavras</h2>
+    <p class="er">ER: ab + ba &nbsp;|&nbsp; Σ = {a, b}</p>
+    <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg" aria-label="NFA ab + ba">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#2c3e50"/>
+        </marker>
+      </defs>
+      <!-- start arrow -->
+      <line x1="20" y1="110" x2="58" y2="110" stroke="#2c3e50" stroke-width="2.2" marker-end="url(#arr)"/>
+      <!-- q0 -->
+      <circle cx="80" cy="110" r="22" fill="#fffdf9" stroke="#2c3e50" stroke-width="2.5"/>
+      <text x="80" y="115" text-anchor="middle" font-size="14" font-family="IBM Plex Sans,sans-serif">1</text>
+      <!-- upper: a b -->
+      <line x1="102" y1="98" x2="168" y2="58" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr)"/>
+      <text x="128" y="68" font-size="14" fill="#b85c38" font-family="IBM Plex Mono,monospace">a</text>
+      <circle cx="200" cy="50" r="22" fill="#fffdf9" stroke="#2c3e50" stroke-width="2.5"/>
+      <text x="200" y="55" text-anchor="middle" font-size="14">2</text>
+      <line x1="222" y1="50" x2="308" y2="50" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr)"/>
+      <text x="258" y="42" font-size="14" fill="#b85c38" font-family="IBM Plex Mono,monospace">b</text>
+      <circle cx="340" cy="50" r="22" fill="#fffdf9" stroke="#0d5c4d" stroke-width="2.5"/>
+      <circle cx="340" cy="50" r="16" fill="none" stroke="#0d5c4d" stroke-width="2"/>
+      <text x="340" y="55" text-anchor="middle" font-size="14">3</text>
+      <!-- lower: b a -->
+      <line x1="102" y1="122" x2="168" y2="162" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr)"/>
+      <text x="128" y="158" font-size="14" fill="#b85c38" font-family="IBM Plex Mono,monospace">b</text>
+      <circle cx="200" cy="170" r="22" fill="#fffdf9" stroke="#2c3e50" stroke-width="2.5"/>
+      <text x="200" y="175" text-anchor="middle" font-size="14">4</text>
+      <line x1="222" y1="170" x2="308" y2="170" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr)"/>
+      <text x="258" y="162" font-size="14" fill="#b85c38" font-family="IBM Plex Mono,monospace">a</text>
+      <circle cx="340" cy="170" r="22" fill="#fffdf9" stroke="#0d5c4d" stroke-width="2.5"/>
+      <circle cx="340" cy="170" r="16" fill="none" stroke="#0d5c4d" stroke-width="2"/>
+      <text x="340" y="175" text-anchor="middle" font-size="14">5</text>
+      <text x="420" y="110" font-size="13" fill="#5a5a5a" font-family="IBM Plex Sans,sans-serif">dois caminhos · um aceita</text>
+    </svg>
+    <p class="hint test"><b>Aceita:</b> ab, ba &nbsp;·&nbsp; <b>Rejeita:</b> aa, bb, a, ε</p>
+  </article>
+
+  <!-- 2. (ba)* -->
+  <article>
+    <h2>2. Fechamento (Kleene)</h2>
+    <p class="er">ER: (ba)* &nbsp;|&nbsp; zero ou mais “ba”</p>
+    <svg viewBox="0 0 560 160" xmlns="http://www.w3.org/2000/svg" aria-label="NFA (ba)*">
+      <defs>
+        <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#2c3e50"/>
+        </marker>
+      </defs>
+      <line x1="30" y1="80" x2="78" y2="80" stroke="#2c3e50" stroke-width="2.2" marker-end="url(#arr2)"/>
+      <!-- q0 final -->
+      <circle cx="110" cy="80" r="26" fill="#fffdf9" stroke="#0d5c4d" stroke-width="2.5"/>
+      <circle cx="110" cy="80" r="19" fill="none" stroke="#0d5c4d" stroke-width="2"/>
+      <text x="110" y="86" text-anchor="middle" font-size="15">1</text>
+      <text x="110" y="128" text-anchor="middle" font-size="12" fill="#5a5a5a">inicial = final (aceita ε)</text>
+      <!-- to q1 -->
+      <line x1="136" y1="80" x2="248" y2="80" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr2)"/>
+      <text x="185" y="70" font-size="15" fill="#b85c38" font-family="IBM Plex Mono,monospace">b</text>
+      <circle cx="280" cy="80" r="26" fill="#fffdf9" stroke="#2c3e50" stroke-width="2.5"/>
+      <text x="280" y="86" text-anchor="middle" font-size="15">2</text>
+      <!-- back a -->
+      <path d="M 280 54 C 280 10, 110 10, 110 54" fill="none" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr2)"/>
+      <text x="195" y="22" font-size="15" fill="#b85c38" font-family="IBM Plex Mono,monospace">a</text>
+    </svg>
+    <p class="hint test"><b>Aceita:</b> ε, ba, baba, bababa &nbsp;·&nbsp; <b>Rejeita:</b> b, bab, ab, a</p>
+  </article>
+
+  <!-- 3. termina em bb -->
+  <article>
+    <h2>3. Termina em “bb”</h2>
+    <p class="er">L = (a+b)*bb &nbsp;|&nbsp; qualquer coisa + sufixo bb</p>
+    <svg viewBox="0 0 620 180" xmlns="http://www.w3.org/2000/svg" aria-label="NFA termina em bb">
+      <defs>
+        <marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#2c3e50"/>
+        </marker>
+      </defs>
+      <line x1="20" y1="90" x2="58" y2="90" stroke="#2c3e50" stroke-width="2.2" marker-end="url(#arr3)"/>
+      <!-- q0 -->
+      <circle cx="90" cy="90" r="24" fill="#fffdf9" stroke="#2c3e50" stroke-width="2.5"/>
+      <text x="90" y="95" text-anchor="middle" font-size="14">0</text>
+      <text x="90" y="132" text-anchor="middle" font-size="11" fill="#5a5a5a">nada</text>
+      <!-- loop a on 0 -->
+      <path d="M 74 70 C 50 30, 130 30, 106 70" fill="none" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr3)"/>
+      <text x="90" y="28" text-anchor="middle" font-size="13" fill="#b85c38" font-family="IBM Plex Mono,monospace">a</text>
+      <!-- 0 -b-> 1 -->
+      <line x1="114" y1="90" x2="198" y2="90" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr3)"/>
+      <text x="150" y="80" font-size="14" fill="#b85c38" font-family="IBM Plex Mono,monospace">b</text>
+      <!-- q1 -->
+      <circle cx="230" cy="90" r="24" fill="#fffdf9" stroke="#2c3e50" stroke-width="2.5"/>
+      <text x="230" y="95" text-anchor="middle" font-size="14">1</text>
+      <text x="230" y="132" text-anchor="middle" font-size="11" fill="#5a5a5a">vi “b”</text>
+      <!-- 1 -a-> 0 -->
+      <path d="M 215 110 C 180 155, 140 155, 105 110" fill="none" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr3)"/>
+      <text x="160" y="162" font-size="13" fill="#b85c38" font-family="IBM Plex Mono,monospace">a</text>
+      <!-- 1 -b-> 2 -->
+      <line x1="254" y1="90" x2="348" y2="90" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr3)"/>
+      <text x="295" y="80" font-size="14" fill="#b85c38" font-family="IBM Plex Mono,monospace">b</text>
+      <!-- q2 final -->
+      <circle cx="380" cy="90" r="24" fill="#fffdf9" stroke="#0d5c4d" stroke-width="2.5"/>
+      <circle cx="380" cy="90" r="17" fill="none" stroke="#0d5c4d" stroke-width="2"/>
+      <text x="380" y="95" text-anchor="middle" font-size="14">2</text>
+      <text x="380" y="132" text-anchor="middle" font-size="11" fill="#5a5a5a">vi “bb”</text>
+      <!-- 2 -b-> 2 -->
+      <path d="M 400 72 C 430 40, 460 70, 402 100" fill="none" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr3)"/>
+      <text x="448" y="55" font-size="13" fill="#b85c38" font-family="IBM Plex Mono,monospace">b</text>
+      <!-- 2 -a-> 0 -->
+      <path d="M 365 110 C 300 175, 160 175, 100 112" fill="none" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr3)"/>
+      <text x="230" y="178" font-size="13" fill="#b85c38" font-family="IBM Plex Mono,monospace">a</text>
+    </svg>
+    <p class="hint test"><b>Aceita:</b> bb, abb, bababb &nbsp;·&nbsp; <b>Rejeita:</b> b, ba, aba, ε</p>
+  </article>
+
+  <!-- 4. sem aa -->
+  <article>
+    <h2>4. Sem substring “aa”</h2>
+    <p class="er">L = (b + ab)*(ε + a) &nbsp;|&nbsp; nunca dois a seguidos</p>
+    <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg" aria-label="NFA sem aa">
+      <defs>
+        <marker id="arr4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#2c3e50"/>
+        </marker>
+      </defs>
+      <line x1="30" y1="90" x2="78" y2="90" stroke="#2c3e50" stroke-width="2.2" marker-end="url(#arr4)"/>
+      <!-- S final: last not a -->
+      <circle cx="110" cy="90" r="26" fill="#fffdf9" stroke="#0d5c4d" stroke-width="2.5"/>
+      <circle cx="110" cy="90" r="19" fill="none" stroke="#0d5c4d" stroke-width="2"/>
+      <text x="110" y="95" text-anchor="middle" font-size="14">S</text>
+      <text x="110" y="140" text-anchor="middle" font-size="11" fill="#5a5a5a">último ≠ a</text>
+      <!-- loop b on S -->
+      <path d="M 90 68 C 60 25, 160 25, 130 68" fill="none" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr4)"/>
+      <text x="110" y="28" text-anchor="middle" font-size="14" fill="#b85c38" font-family="IBM Plex Mono,monospace">b</text>
+      <!-- S -a-> A -->
+      <line x1="136" y1="90" x2="248" y2="90" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr4)"/>
+      <text x="185" y="80" font-size="14" fill="#b85c38" font-family="IBM Plex Mono,monospace">a</text>
+      <!-- A final -->
+      <circle cx="280" cy="90" r="26" fill="#fffdf9" stroke="#0d5c4d" stroke-width="2.5"/>
+      <circle cx="280" cy="90" r="19" fill="none" stroke="#0d5c4d" stroke-width="2"/>
+      <text x="280" y="95" text-anchor="middle" font-size="14">A</text>
+      <text x="280" y="140" text-anchor="middle" font-size="11" fill="#5a5a5a">último = a</text>
+      <!-- A -b-> S -->
+      <path d="M 265 112 C 220 165, 170 165, 125 112" fill="none" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr4)"/>
+      <text x="195" y="172" font-size="14" fill="#b85c38" font-family="IBM Plex Mono,monospace">b</text>
+      <!-- A -a-> M dead -->
+      <line x1="306" y1="90" x2="398" y2="90" stroke="#2c3e50" stroke-width="2" marker-end="url(#arr4)"/>
+      <text x="345" y="80" font-size="14" fill="#b85c38" font-family="IBM Plex Mono,monospace">a</text>
+      <circle cx="430" cy="90" r="26" fill="#f3ebe6" stroke="#8a4a3a" stroke-width="2.5"/>
+      <text x="430" y="95" text-anchor="middle" font-size="14" fill="#8a4a3a">M</text>
+      <text x="430" y="140" text-anchor="middle" font-size="11" fill="#8a4a3a">morto (já teve aa)</text>
+      <!-- M loops -->
+      <path d="M 450 72 C 490 40, 510 90, 452 105" fill="none" stroke="#8a4a3a" stroke-width="2" marker-end="url(#arr4)"/>
+      <text x="500" y="55" font-size="12" fill="#8a4a3a" font-family="IBM Plex Mono,monospace">a,b</text>
+    </svg>
+    <p class="hint test"><b>Aceita:</b> ε, a, b, ab, ba, bab, aba &nbsp;·&nbsp; <b>Rejeita:</b> aa, baa, aab</p>
+  </article>
+
+  <footer>
+    Arquivo: <code>notas/nfas-visuais-aula03.html</code> — abra no navegador.
+    Mais exercícios: <code>estudo-aula03-automatos-finitos.md</code>
+  </footer>
+</body>
+</html>

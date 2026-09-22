@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teoria — visuais Aula 05 (NFA→DFA)</title>
+  <style>
+    :root {
+      --bg: #f7f4ef; --ink: #1a1a1a; --line: #2c3e50;
+      --final: #0d5c4d; --accent: #b85c38; --dead: #8a4a3a;
+      --card: #fffdf9; --muted: #5a5a5a; --set: #1a5f7a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(ellipse at 15% 0%, #ebe4d8 0%, transparent 50%),
+        radial-gradient(ellipse at 90% 10%, #dce8ea 0%, transparent 40%),
+        var(--bg);
+      color: var(--ink); line-height: 1.45;
+      padding: 1.5rem clamp(1rem, 4vw, 2.5rem) 3rem;
+    }
+    h1 {
+      font-family: "IBM Plex Serif", Georgia, serif;
+      font-weight: 600; font-size: clamp(1.6rem, 4vw, 2.1rem);
+      margin: 0 0 0.35rem; letter-spacing: -0.02em;
+    }
+    .lead { color: var(--muted); max-width: 46rem; margin: 0 0 1.25rem; }
+    .nav { font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .nav a { color: var(--accent); }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 1rem 1.5rem;
+      margin-bottom: 1.75rem; font-size: 0.9rem;
+    }
+    article {
+      background: var(--card); border: 1px solid #e4ddd2;
+      border-radius: 4px; padding: 1.25rem 1.25rem 0.85rem;
+      margin-bottom: 1.4rem;
+    }
+    article h2 { font-size: 1.05rem; margin: 0 0 0.2rem; }
+    .er {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      color: var(--accent); font-size: 0.9rem; margin: 0 0 0.7rem;
+    }
+    .hint {
+      font-size: 0.88rem; color: var(--muted); margin: 0.55rem 0 0;
+      border-top: 1px dashed #ddd5c8; padding-top: 0.6rem;
+    }
+    .hint b { color: var(--ink); }
+    svg { width: 100%; height: auto; display: block; }
+    .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 720px) { .cols { grid-template-columns: 1fr; } }
+    table.t {
+      border-collapse: collapse; font-size: 0.85rem;
+      font-family: "IBM Plex Mono", monospace; width: 100%;
+    }
+    table.t th, table.t td {
+      border: 1px solid #d5cdc0; padding: 0.3rem 0.5rem; text-align: center;
+    }
+    table.t th { background: #f0ebe3; }
+    table.t td.f { background: #e6f2ef; font-weight: 600; }
+    table.t td.m { background: #f5e8e4; color: var(--dead); }
+    .step {
+      background: #f0ebe3; border-radius: 4px; padding: 0.75rem 1rem;
+      font-size: 0.9rem; margin-bottom: 1.25rem;
+    }
+    .step ol { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+    footer { font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Aula 05 — NFA → DFA (visuais)</h1>
+  <p class="lead">Cada estado do DFA é um <b>conjunto</b> de estados do NFA. Une todos os destinos do mesmo símbolo. Final = conjunto que <b>contém</b> algum final do NFA. ∅ vira estado morto <b>M</b>.</p>
+  <p class="nav">
+    <a href="nfas-visuais-aula04.html">← Aula 04</a> ·
+    <a href="nfas-visuais-aula03.html">Aula 03</a>
+  </p>
+
+  <div class="step">
+    <b>Algoritmo (fila K)</b>
+    <ol>
+      <li>Coloque o inicial <code>{s}</code> em K</li>
+      <li>Para cada conjunto Qᵢ ainda não expandido e cada símbolo x:  
+          δ'(Qᵢ,x) = união de δ(q,x) para q ∈ Qᵢ</li>
+      <li>Se o resultado for novo → entra em K</li>
+      <li>Finais: quem contém algum f ∈ F &nbsp;·&nbsp; |Q_DFA| ≤ 2^|Q_NFA|</li>
+    </ol>
+  </div>
+
+  <div class="legend">
+    <span>rótulo <b style="color:#1a5f7a">12</b> = conjunto {1,2}</span>
+    <span>círculo duplo = final</span>
+    <span style="color:#8a4a3a">M = morto</span>
+  </div>
+
+  <!-- Exemplo 1 -->
+  <article>
+    <h2>Exemplo 1 do slide</h2>
+    <p class="er">NFA: s=1 · F={3} &nbsp;→&nbsp; DFA com estados 1, 2, 13, 12</p>
+    <div class="cols">
+      <div>
+        <p style="margin:0 0 0.4rem;font-size:0.85rem;color:#5a5a5a">NFA (entrada)</p>
+        <svg viewBox="0 0 340 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="n1" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2c3e50"/></marker>
+          </defs>
+          <line x1="15" y1="50" x2="48" y2="50" stroke="#2c3e50" stroke-width="2" marker-end="url(#n1)"/>
+          <circle cx="70" cy="50" r="20" fill="#fffdf9" stroke="#2c3e50" stroke-width="2.2"/>
+          <text x="70" y="55" text-anchor="middle" font-size="14">1</text>
+          <!-- 1 loop a -->
+          <path d="M55 34 C 40 0, 100 0, 85 34" fill="none" stroke="#2c3e50" stroke-width="1.8" marker-end="url(#n1)"/>
+          <text x="70" y="12" text-anchor="middle" font-size="12" fill="#b85c38" font-family="monospace">a</text>
+          <!-- 1-b->2 -->
+          <line x1="90" y1="55" x2="148" y2="95" stroke="#2c3e50" stroke-width="1.8" marker-end="url(#n1)"/>
+          <text x="108" y="85" font-size="12" fill="#b85c38" font-family="monospace">b</text>
+          <circle cx="170" cy="110" r="20" fill="#fffdf9" stroke="#2c3e50" stroke-width="2.2"/>
+          <text x="170" y="115" text-anchor="middle" font-size="14">2</text>
+          <!-- 2-a->{1,3} shown as two arrows -->
+          <path d="M155 95 C 120 70, 100 70, 85 65" fill="none" stroke="#2c3e50" stroke-width="1.8" marker-end="url(#n1)"/>
+          <text x="105" y="68" font-size="11" fill="#b85c38" font-family="monospace">a</text>
+          <line x1="185" y1="120" x2="248" y2="155" stroke="#2c3e50" stroke-width="1.8" marker-end="url(#n1)"/>
+          <text x="210" y="150" font-size="11" fill="#b85c38" font-family="monospace">a</text>
+          <!-- 2-b->{1,2} -->
+          <path d="M160 125 C 130 160, 90 160, 75 70" fill="none" stroke="#2c3e50" stroke-width="1.6" marker-end="url(#n1)"/>
+          <text x="95" y="155" font-size="11" fill="#b85c38" font-family="monospace">b</text>
+          <path d="M190 105 C 210 70, 200 70, 185 95" fill="none" stroke="#2c3e50" stroke-width="1.6" marker-end="url(#n1)"/>
+          <text x="210" y="78" font-size="11" fill="#b85c38" font-family="monospace">b</text>
+          <!-- 3 -->
+          <circle cx="270" cy="160" r="20" fill="#fffdf9" stroke="#0d5c4d" stroke-width="2.2"/>
+          <circle cx="270" cy="160" r="14" fill="none" stroke="#0d5c4d" stroke-width="1.7"/>
+          <text x="270" y="165" text-anchor="middle" font-size="14">3</text>
+          <!-- 3-b->1 -->
+          <path d="M255 150 C 200 120, 120 100, 90 60" fill="none" stroke="#2c3e50" stroke-width="1.6" marker-end="url(#n1)"/>
+          <text x="195" y="112" font-size="11" fill="#b85c38" font-family="monospace">b</text>
+          <text x="250" y="195" font-size="11" fill="#5a5a5a">3 --a--> ∅</text>
+        </svg>
+        <table class="t">
+          <tr><th></th><th>a</th><th>b</th></tr>
+          <tr><td>→1</td><td>{1}</td><td>{2}</td></tr>
+          <tr><td>2</td><td>{1,3}</td><td>{1,2}</td></tr>
+          <tr><td class="f">=3</td><td>∅</td><td>{1}</td></tr>
+        </table>
+      </div>
+      <div>
+        <p style="margin:0 0 0.4rem;font-size:0.85rem;color:#5a5a5a">DFA (saída)</p>
+        <svg viewBox="0 0 360 210" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="d1" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2c3e50"/></marker>
+          </defs>
+          <line x1="15" y1="40" x2="48" y2="40" stroke="#2c3e50" stroke-width="2" marker-end="url(#d1)"/>
+          <circle cx="70" cy="40" r="22" fill="#fffdf9" stroke="#2c3e50" stroke-width="2.2"/>
+          <text x="70" y="45" text-anchor="middle" font-size="14" fill="#1a5f7a" font-weight="600">1</text>
+          <!-- 1-a->1 loop -->
+          <path d="M55 22 C 40 -5, 100 -5, 85 22" fill="none" stroke="#2c3e50" stroke-width="1.8" marker-end="url(#d1)"/>
+          <text x="70" y="5" text-anchor="middle" font-size="12" fill="#b85c38" font-family="monospace">a</text>
+          <!-- 1-b->2 -->
+          <line x1="90" y1="50" x2="148" y2="95" stroke="#2c3e50" stroke-width="1.8" marker-end="url(#d1)"/>
+          <text x="110" y="82" font-size="12" fill="#b85c38" font-family="monospace">b</text>
+          <circle cx="170" cy="110" r="22" fill="#fffdf9" stroke="#2c3e50" stroke-width="2.2"/>
+          <text x="170" y="115" text-anchor="middle" font-size="14" fill="#1a5f7a" font-weight="600">2</text>
+          <!-- 2-a->13 -->
+          <line x1="190" y1="100" x2="248" y2="55" stroke="#2c3e50" stroke-width="1.8" marker-end="url(#d1)"/>
+          <text x="215" y="68" font-size="12" fill="#b85c38" font-family="monospace">a</text>
+          <circle cx="270" cy="45" r="22" fill="#fffdf9" stroke="#0d5c4d" stroke-width="2.2"/>
+          <circle cx="270" cy="45" r="15" fill="none" stroke="#0d5c4d" stroke-width="1.7"/>
+          <text x="270" y="50" text-anchor="middle" font-size="13" fill="#1a5f7a" font-weight="600">13</text>
+          <!-- 2-b->12 -->
+          <line x1="185" y1="125" x2="228" y2="155" stroke="#2c3e50" stroke-width="1.8" marker-end="url(#d1)"/>
+          <text x="200" y="152" font-size="12" fill="#b85c38" font-family="monospace">b</text>
+          <circle cx="250" cy="170" r="22" fill="#fffdf9" stroke="#2c3e50" stroke-width="2.2"/>
+          <text x="250" y="175" text-anchor="middle" font-size="13" fill="#1a5f7a" font-weight="600">12</text>
+          <!-- 13-a->1 -->
+          <path d="M250 50 C 180 20, 120 20, 90 35" fill="none" stroke="#2c3e50" stroke-width="1.6" marker-end="url(#d1)"/>
+          <text x="160" y="22" font-size="11" fill="#b85c38" font-family="monospace">a</text>
+          <!-- 13-b->12 -->
+          <line x1="270" y1="67" x2="258" y2="148" stroke="#2c3e50" stroke-width="1.6" marker-end="url(#d1)"/>
+          <text x="278" y="115" font-size="11" fill="#b85c38" font-family="monospace">b</text>
+          <!-- 12-a->13 -->
+          <path d="M250 148 C 290 120, 290 80, 275 67" fill="none" stroke="#2c3e50" stroke-width="1.6" marker-end="url(#d1)"/>
+          <text x="300" y="110" font-size="11" fill="#b85c38" font-family="monospace">a</text>
+          <!-- 12-b->12 loop -->
+          <path d="M268 160 C 300 145, 300 195, 268 185" fill="none" stroke="#2c3e50" stroke-width="1.6" marker-end="url(#d1)"/>
+          <text x="310" y="175" font-size="11" fill="#b85c38" font-family="monospace">b</text>
+        </svg>
+        <table class="t">
+          <tr><th></th><th>a</th><th>b</th></tr>
+          <tr><td>→1</td><td>1</td><td>2</td></tr>
+          <tr><td>2</td><td>13</td><td>12</td></tr>
+          <tr><td class="f">=13</td><td>1</td><td>12</td></tr>
+          <tr><td>12</td><td>13</td><td>12</td></tr>
+        </table>
+      </div>
+    </div>
+    <p class="hint"><b>Por que 13 é final?</b> porque o conjunto {1,3} contém o final 3 do NFA.</p>
+  </article>
+
+  <!-- Exemplo 2 morto -->
+  <article>
+    <h2>Exemplo 2 — estado morto M</h2>
+    <p class="er">NFA: s=1 · F={2} · δ(1,b)=∅ &nbsp;→&nbsp; no DFA nasce M</p>
+    <div class="cols">
+      <div>
+        <p style="margin:0 0 0.4rem;font-size:0.85rem;color:#5a5a5a">NFA</p>
+        <svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="n2" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2c3e50"/></marker>
+          </defs>
+          <line x1="20" y1="60" x2="52" y2="60" stroke="#2c3e50" stroke-width="2" marker-end="url(#n2)"/>
+          <circle cx="75" cy="60" r="22" fill="#fffdf9" stroke="#2c3e50" stroke-width="2.2"/>
+          <text x="75" y="65" text-anchor="middle" font-size="14">1</text>
+          <line x1="97" y1="60" x2="168" y2="60" stroke="#2c3e50" stroke-width="2" marker-end="url(#n2)"/>
+          <text x="125" y="52" font-size="13" fill="#b85c38" font-family="monospace">a</text>
+          <circle cx="195" cy="60" r="22" fill="#fffdf9" stroke="#0d5c4d" stroke-width="2.2"/>
+          <circle cx="195" cy="60" r="15" fill="none" stroke="#0d5c4d" stroke-width="1.7"/>
+          <text x="195" y="65" text-anchor="middle" font-size="14">2</text>
+          <path d="M210 42 C 230 15, 250 40, 212 72" fill="none" stroke="#2c3e50" stroke-width="1.8" marker-end="url(#n2)"/>
+          <text x="248" y="35" font-size="12" fill="#b85c38" font-family="monospace">a,b</text>
+          <text x="75" y="105" text-anchor="middle" font-size="12" fill="#8a4a3a">b → ∅</text>
+        </svg>
+        <table class="t">
+          <tr><th></th><th>a</th><th>b</th></tr>
+          <tr><td>→1</td><td>{2}</td><td class="m">∅</td></tr>
+          <tr><td class="f">=2</td><td>{2}</td><td>{2}</td></tr>
+        </table>
+      </div>
+      <div>
+        <p style="margin:0 0 0.4rem;font-size:0.85rem;color:#5a5a5a">DFA</p>
+        <svg viewBox="0 0 340 140" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="d2" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2c3e50"/></marker>
+            <marker id="dm" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#8a4a3a"/></marker>
+          </defs>
+          <line x1="20" y1="50" x2="52" y2="50" stroke="#2c3e50" stroke-width="2" marker-end="url(#d2)"/>
+          <circle cx="75" cy="50" r="22" fill="#fffdf9" stroke="#2c3e50" stroke-width="2.2"/>
+          <text x="75" y="55" text-anchor="middle" font-size="14">1</text>
+          <line x1="97" y1="50" x2="168" y2="50" stroke="#2c3e50" stroke-width="2" marker-end="url(#d2)"/>
+          <text x="125" y="42" font-size="13" fill="#b85c38" font-family="monospace">a</text>
+          <circle cx="195" cy="50" r="22" fill="#fffdf9" stroke="#0d5c4d" stroke-width="2.2"/>
+          <circle cx="195" cy="50" r="15" fill="none" stroke="#0d5c4d" stroke-width="1.7"/>
+          <text x="195" y="55" text-anchor="middle" font-size="14">2</text>
+          <path d="M210 32 C 235 5, 255 30, 212 62" fill="none" stroke="#2c3e50" stroke-width="1.8" marker-end="url(#d2)"/>
+          <text x="248" y="22" font-size="12" fill="#b85c38" font-family="monospace">a,b</text>
+          <!-- 1-b->M -->
+          <line x1="80" y1="72" x2="80" y2="108" stroke="#8a4a3a" stroke-width="2" marker-end="url(#dm)"/>
+          <text x="92" y="95" font-size="13" fill="#8a4a3a" font-family="monospace">b</text>
+          <circle cx="80" cy="125" r="18" fill="#f5e8e4" stroke="#8a4a3a" stroke-width="2.2"/>
+          <text x="80" y="130" text-anchor="middle" font-size="13" fill="#8a4a3a">M</text>
+          <path d="M98 125 C 130 110, 130 145, 98 138" fill="none" stroke="#8a4a3a" stroke-width="1.8" marker-end="url(#dm)"/>
+          <text x="140" y="130" font-size="12" fill="#8a4a3a" font-family="monospace">a,b</text>
+        </svg>
+        <table class="t">
+          <tr><th></th><th>a</th><th>b</th></tr>
+          <tr><td>→1</td><td>2</td><td class="m">M</td></tr>
+          <tr><td class="f">=2</td><td>2</td><td>2</td></tr>
+          <tr><td class="m">M</td><td class="m">M</td><td class="m">M</td></tr>
+        </table>
+      </div>
+    </div>
+    <p class="hint"><b>Regra:</b> apareceu ∅ na tabela do NFA → no DFA cria M com M --a--> M e M --b--> M.</p>
+  </article>
+
+  <!-- Mini prática -->
+  <article>
+    <h2>Treino rápido — faça no papel</h2>
+    <p class="er">NFA: s=1 · F={2}</p>
+    <table class="t" style="max-width:280px">
+      <tr><th></th><th>a</th><th>b</th></tr>
+      <tr><td>→1</td><td>{1}</td><td>{1,2}</td></tr>
+      <tr><td class="f">=2</td><td>{2}</td><td>∅</td></tr>
+    </table>
+    <p class="hint">Monte a tabela do DFA. Gabarito: estados →1, =12 · δ(1,a)=1 · δ(1,b)=12 · δ(12,a)=12 · δ(12,b)=1 · (não precisa M: união de {1,2} com b não é ∅).</p>
+  </article>
+
+  <footer>
+    <code>notas/nfas-visuais-aula05.html</code> ·
+    nota: <a href="estudo-aula05-nfa-para-dfa.md">estudo-aula05</a>
+  </footer>
+</body>
+</html>
