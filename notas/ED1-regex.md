@@ -91,7 +91,7 @@ Python tem a biblioteca padrão **`re`** (importada com `import re`). Texto de e
 |---|---|---|---|
 | `re.search` | procura o padrão **em qualquer posição**; retorna o 1º match ou `None` | `re.search(r"\d+\.\d{2}", texto)` | `1999.90` · span `(17, 24)` |
 | `re.match` | igual, mas só **a partir do início** da string | `re.match(r"\d+\.\d{2}", "1999.90 reais")` | `1999.90` |
-| `re.fullmatch` | exige que a **string inteira** case | `re.fullmatch(r"\d{3}\.?\d{3}\.?\d{3}-?\d{2}", "123.456.789-00")` | `123.456.789-00` |
+| `re.fullmatch` | exige que a **string inteira** case | CPF pontuado ou 11 dígitos em `"123.456.789-00"` | `123.456.789-00` |
 | `re.findall` | retorna a **lista de todos os matches** | `re.findall(r"\d+\.\d{2}", texto)` | `['1999.90', '350.00']` |
 | `re.finditer` | igual, mas como **iterador de matches** (acesso ao span) | `[(m.group(), m.span()) for m in re.finditer(r"\d+\.\d{2}", texto)]` | `[('1999.90', (17,24)), ('350.00', (38,44))]` |
 | `re.sub` | **substitui** os matches por outro texto | `re.sub(r"\s+", " ", "um  texto  com  espacos")` | `um texto com espacos` |
@@ -106,19 +106,22 @@ Python tem a biblioteca padrão **`re`** (importada com `import re`). Texto de e
 | Flag `re.IGNORECASE` | `re.findall(r"ab[cs]", "Abc abC aBc", re.IGNORECASE)` | `['Abc', 'abC', 'aBc']` |
 | Flag `re.MULTILINE` (`^` por linha) | `re.findall(r"^\w+", "linha1\nlinha2\nlinha3", re.MULTILINE)` | `['linha1', 'linha2', 'linha3']` |
 
+`re.match` só tenta o início da string. Em `"custa 1999.90"`, `re.match(r"\d+\.\d{2}", ...)` devolve `None`, enquanto `re.search` no mesmo texto devolve `1999.90`.
+
 ## Capítulo 3 — 10 problemas úteis resolvidos (entrada → regex → saída real)
 
 Todos executados com **Python 3 + `re`** nesta máquina; as saídas são reais ("telas de execução").
 
 ### Problema 1 — Validar CPF (formato)
 
-**Entrada:** `123.456.789-00`, `12345678900`, `12.3.456.789-00`, `ABC.DEF.GHI-JK`
-**REGEX:** `^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$`
+**Entrada:** `123.456.789-00`, `12345678900`, `12.3.456.789-00`, `123.456789-00`, `ABC.DEF.GHI-JK`
+**REGEX:** `^(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11})$` (pontuação completa **ou** só os 11 dígitos; mistura parcial não passa)
 **Saída:**
 ```
 '123.456.789-00'    -> VALIDO
 '12345678900'       -> VALIDO
 '12.3.456.789-00'   -> INVALIDO
+'123.456789-00'     -> INVALIDO
 'ABC.DEF.GHI-JK'    -> INVALIDO
 ```
 
@@ -143,12 +146,13 @@ Todos executados com **Python 3 + `re`** nesta máquina; as saídas são reais (
 
 ### Problema 4 — Validar placa de carro (padrão Mercosul)
 
-**Entrada:** `ABC1D23`, `ABC-1234`, `ABC1D2X`, `AB1C2D3`, `XYZ9A99`
-**REGEX:** `^[A-Z]{3}\d[A-Z0-9]\d{2}$`
+**Entrada:** `ABC1D23`, `ABC-1234`, `ABC1234`, `ABC1D2X`, `AB1C2D3`, `XYZ9A99`
+**REGEX:** `^[A-Z]{3}\d[A-Z]\d{2}$` (Mercosul: a quinta posição é letra)
 **Saída:**
 ```
 'ABC1D23'   -> VALIDA
 'ABC-1234'  -> INVALIDA
+'ABC1234'   -> INVALIDA
 'ABC1D2X'   -> INVALIDA
 'AB1C2D3'   -> INVALIDA
 'XYZ9A99'   -> VALIDA
@@ -158,7 +162,7 @@ Todos executados com **Python 3 + `re`** nesta máquina; as saídas são reais (
 
 **Entrada:** `Prova dia 04/09/2026, entrega em 11/9/2026 e feriado 7/09. Sem data 99-99-9999.`
 **REGEX:** `\b\d{1,2}/\d{1,2}/\d{4}\b`
-**Saída:** `['04/09/2026', '11/9/2026']` (o `\b` impede que `99-99-9999` case)
+**Saída:** `['04/09/2026', '11/9/2026']` (`99-99-9999` não casa porque o padrão exige `/`; `7/09` não casa porque falta o ano. O `\b` só evita casar no meio de uma palavra.)
 
 ### Problema 6 — Validar CEP
 
@@ -188,7 +192,7 @@ Todos executados com **Python 3 + `re`** nesta máquina; as saídas são reais (
 ### Problema 8 — Remover espaços extras e normalizar texto
 
 **Entrada:** `'A  aula    de   Regex   sera  as   10h,    na sala   B-2.   '`
-**REGEX:** `\s+` (substituir por espaço) via `re.sub`
+**REGEX:** `\s+` substituído por um espaço com `re.sub`, e `.strip()` para tirar o espaço que sobra nas pontas
 **Saída:** `A aula de Regex sera as 10h, na sala B-2.`
 
 ### Problema 9 — Extrair URLs de um texto
@@ -211,15 +215,15 @@ Todos executados com **Python 3 + `re`** nesta máquina; as saídas são reais (
 - **Capítulos:** paginados; títulos hierarquizados (1, 1.1, 1.2 …), como neste arquivo; sumário (se exigido).
 - **Fonte única em todo o texto** (ex.: Times New Roman 12, espaçamento 1,5, margens 3/2 cm na conversão para DOCX/PDF).
 - **Código fonte em fonte diferenciada** (ex.: Courier New 10, fundo ou recuo), como nos capítulos 2 e 3.
-- **Referência:** DEVMEDIA. *Iniciando em Expressões Regulares*. Disponível em: https://www.devmedia.com.br/iniciando-expressoes-regulares/6557. STEINBRUCH segue como referência transversal da disciplina; complementares: documentação oficial `docs.python.org/3/library/re.html`.
+- **Referência:** DEVMEDIA. *Iniciando em Expressões Regulares*. Disponível em: https://www.devmedia.com.br/iniciando-expressoes-regulares/6557. Acesso em: 26 set. 2026. Documentação da biblioteca: PYTHON SOFTWARE FOUNDATION. *re — Regular expression operations*. Disponível em: https://docs.python.org/3/library/re.html. Acesso em: 26 set. 2026.
 
 ## Checklist de entrega
 
-- [ ] Capítulo 1: texto sobre o que é REGEX + tabelas (especiais, agrupamento, âncoras, quantificadores, classes)
-- [ ] Capítulo 2: biblioteca `re` + métodos com exemplos rodando (search, match, fullmatch, findall, finditer, sub, split, compile, flags)
-- [ ] Capítulo 3: 10 problemas com entrada, código REGEX e saída de execução
-- [ ] Capa, capítulos, paginação, fonte única + fonte de código diferenciada
-- [ ] Rodar tudo numa máquina Python 3 para regenerar as saídas (script: reproduzir os blocos acima)
+- [x] Capítulo 1: texto sobre o que é REGEX + tabelas (especiais, agrupamento, âncoras, quantificadores, classes)
+- [x] Capítulo 2: biblioteca `re` + métodos com exemplos rodando (search, match, fullmatch, findall, finditer, sub, split, compile, flags)
+- [x] Capítulo 3: 10 problemas com entrada, código REGEX e saída de execução
+- [x] Documento ABNT (capa, capítulos, paginação, Times no texto e Courier no código): `projetos/ED1/ed1-regex.tex`
+- [x] Script conferido em Python 3: `material/exercicios/ed1-regex-demo.py`
 
 ---
 

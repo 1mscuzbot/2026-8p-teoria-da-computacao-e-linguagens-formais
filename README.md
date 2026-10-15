@@ -17,7 +17,7 @@
 - [NFAs visuais — Aula 03 (HTML)](notas/nfas-visuais-aula03.html) · imagem: `notas/teoria-nfas-aula03-visual.png`
 - [Visuais Aula 04 — ε (HTML)](notas/nfas-visuais-aula04.html) · imagem: `notas/teoria-aula04-eps-visual.png`
 - [Visuais Aula 05 — NFA→DFA (HTML)](notas/nfas-visuais-aula05.html) · imagem: `notas/teoria-aula05-dfa-visual.png`
-- [ED1 — Expressões Regulares (REGEX): teoria, biblioteca `re` e 10 problemas resolvidos com saída real](notas/ED1-regex.md) · script: `material/exercicios/ed1-regex-demo.py`
+- [ED1 — Expressões Regulares (REGEX)](notas/ED1-regex.md) · documento ABNT: `projetos/ED1/ed1-regex.tex` · script: `material/exercicios/ed1-regex-demo.py`
 
 ## Arquivos recentes
 | Arquivo | Descrição |

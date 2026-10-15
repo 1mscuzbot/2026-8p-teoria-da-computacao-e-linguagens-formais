@@ -1,0 +1,579 @@
+% Estudo Dirigido 1 — Teoria da Computação e Linguagens Formais.
+% Mesmo modelo de tcc-NAS-utp: abntex2 + packages/abnt-UTP.sty.
+% Compilar nesta pasta:
+%   pdflatex ed1-regex.tex
+%   bibtex ed1-regex
+%   pdflatex ed1-regex.tex
+%   pdflatex ed1-regex.tex
+
+\documentclass[
+    12pt,
+    oneside,
+    a4paper,
+    chapter=TITLE,
+    section=TITLE,
+    sumario=abnt-6027-2012
+]{abntex2}
+
+\usepackage{packages/abnt-UTP}
+
+% A capa do modelo traz instituição, autor, título, local e ano.
+% Estas linhas acrescentam faculdade, curso, disciplina e professor,
+% no mesmo corpo (negrito, maiúsculas, \large) da capa do TCC.
+\renewcommand{\imprimircapa}{%
+    \begin{capa}%
+        \center
+        {\bfseries\large\MakeUppercase{\imprimirinstituicao}\par}
+        \vspace{0.4cm}
+        {\bfseries\large\MakeUppercase{Faculdade de Ciências Exatas e de Tecnologia}\par}
+        \vspace{0.4cm}
+        {\bfseries\large\MakeUppercase{Bacharelado em Ciência da Computação}\par}
+        \vspace*{1cm}
+
+        {\bfseries\large\MakeUppercase{\imprimirautor}\par}
+        \vfill
+
+        {\bfseries\large\MakeUppercase{\imprimirtitulo}\par}
+        \vfill
+
+        {\bfseries\large\MakeUppercase{Estudo Dirigido --- 1º bimestre}\par}
+        \vspace{0.4cm}
+        {\bfseries\large\MakeUppercase{Teoria da Computação e Linguagens Formais}\par}
+        \vspace{0.4cm}
+        {\bfseries\large\MakeUppercase{Prof. Diógenes Cogo Furlan}\par}
+        \vfill
+
+        {\bfseries\large\MakeUppercase{\imprimirlocal}\par}
+        {\bfseries\large\MakeUppercase{\imprimirdata}\par}
+    \end{capa}
+}
+
+\lstset{breakatwhitespace=false}
+
+\titulo{Expressões regulares (REGEX): conceitos, programação em Python e aplicações}
+\autor{Lucas Müller Scuzziato}
+\instituicao{Universidade Tuiuti do Paraná}
+\local{Curitiba}
+\data{2026}
+
+\begin{document}
+
+\OnehalfSpacing
+\setSpacing{1.453}
+\imprimircapa
+\sumario
+\textual
+
+\chapter{O QUE É REGEX}
+\label{cap:regex}
+
+Uma expressão regular (REGEX) é uma sequência de caracteres que descreve um padrão de busca em um texto. Em vez de procurar uma cadeia exata, como \texttt{123.456.789-00}, escreve-se um formato capaz de reconhecer toda cadeia daquele tipo. O padrão é a soma de literais, que são os caracteres fixos, com metacaracteres, que indicam repetição, alternativa, posição e classe \cite{devmedia}.
+
+Na disciplina, esse recurso é a versão prática das linguagens regulares. A barra vertical corresponde à união, a justaposição corresponde à concatenação, o asterisco corresponde ao fecho de Kleene e o ponto de interrogação corresponde à escolha entre o símbolo e a cadeia vazia. Os exemplos deste trabalho usam a notação da biblioteca \texttt{re} do Python \cite{pythonre}, que é a forma dessas expressões nas ferramentas de programação.
+
+\section{CARACTERES ESPECIAIS}
+\label{sec:especiais}
+
+Metacaractere é o símbolo que deixa de valer como letra e passa a valer como operador do padrão. Quando o símbolo precisa aparecer como texto, usa-se a barra invertida. Assim, \verb|\.| casa só o ponto, e não um caractere qualquer.
+
+\begin{quadro}[!h]
+    \centering
+    \legenda[quad:meta]{CARACTERES ESPECIAIS (METACARACTERES)}
+    \small
+    \begin{tabular}{|p{2.1cm}|p{4.8cm}|p{2.7cm}|p{3.6cm}|}
+        \hline
+        \textbf{Símbolo} & \textbf{Significado} & \textbf{Exemplo} & \textbf{Casa com} \\
+        \hline
+        \hline
+        \verb|.| & Qualquer caractere, exceto quebra de linha & \verb|a.c| & \texttt{abc}, \texttt{a1c}, \texttt{a c} \\
+        \hline
+        \verb|*| & Zero ou mais repetições do elemento anterior & \verb|ab*c| & \texttt{ac}, \texttt{abc}, \texttt{abbc} \\
+        \hline
+        \verb|+| & Uma ou mais repetições & \verb|ab+c| & \texttt{abc}, \texttt{abbc} \\
+        \hline
+        \verb|?| & Zero ou uma vez & \verb|ab?c| & \texttt{ac}, \texttt{abc} \\
+        \hline
+        \verb|{n}| & Exatamente \textit{n} repetições & \verb|\d{3}| & \texttt{123} \\
+        \hline
+        \verb|\| & Escape: o caractere seguinte é literal & \verb|\.| & só o ponto \\
+        \hline
+        \verb+|+ & Alternância (união) & \verb+a|b+ & \texttt{a} ou \texttt{b} \\
+        \hline
+        \verb|()| & Agrupamento e captura & \verb|(ab)+| & \texttt{ab}, \texttt{abab} \\
+        \hline
+        \verb|[]| & Classe de caracteres & \verb|[abc]| & um entre \texttt{a}, \texttt{b} e \texttt{c} \\
+        \hline
+        \verb|^| & Início da string & \verb|^abc| & só se começa com \texttt{abc} \\
+        \hline
+        \verb|$| & Fim da string & \verb|abc$| & só se termina com \texttt{abc} \\
+        \hline
+    \end{tabular}
+    \fonte{Elaborado pelo autor, com base em \citeonline{devmedia}.}
+\end{quadro}
+
+A expressão \verb|(ab)+| descreve a mesma linguagem que \verb|(ab)(ab)*|. A alternância \verb+a|b+ é a união, e \verb|a?| equivale a escolher \texttt{a} ou a cadeia vazia.
+
+\section{CARACTERES DE AGRUPAMENTO}
+\label{sec:grupos}
+
+Os parênteses juntam vários símbolos num único elemento, para que um quantificador se aplique ao bloco inteiro. Na biblioteca \texttt{re}, o parêntese comum também captura o trecho, e esse trecho pode ser reutilizado na substituição ou por uma referência numérica.
+
+\begin{quadro}[!h]
+    \centering
+    \legenda[quad:grupos]{AGRUPAMENTO E CAPTURA}
+    \small
+    \begin{tabular}{|p{3.3cm}|p{5.2cm}|p{5.2cm}|}
+        \hline
+        \textbf{Símbolo} & \textbf{Papel} & \textbf{Exemplo} \\
+        \hline
+        \hline
+        \verb|(...)| & Agrupa e captura o trecho & \verb|(\d{2})/(\d{2})| \\
+        \hline
+        \verb|(?:...)| & Agrupa sem capturar & \verb|(?:ab)+| \\
+        \hline
+        \verb|(?P<nome>...)| & Grupo nomeado, específico do Python & \verb|(?P<ano>\d{4})| \\
+        \hline
+        \verb|\1|, \verb|\2| & Referência ao grupo já capturado & \verb|(\w)\1| casa \texttt{aa}, \texttt{bb} \\
+        \hline
+    \end{tabular}
+    \fonteautoria
+\end{quadro}
+
+\section{CARACTERES ÂNCORA}
+\label{sec:ancoras}
+
+Âncora não consome caractere. Ela exige que o padrão ocorra numa posição: início, fim, fronteira de palavra ou, no caso dos \textit{lookaheads}, um contexto à frente ou atrás.
+
+\begin{quadro}[!h]
+    \centering
+    \legenda[quad:ancoras]{ÂNCORAS}
+    \small
+    \begin{tabular}{|p{3.0cm}|p{11.0cm}|}
+        \hline
+        \textbf{Âncora} & \textbf{Significado} \\
+        \hline
+        \hline
+        \verb|^| & Início da string. Com a flag \texttt{re.MULTILINE}, início de cada linha. \\
+        \hline
+        \verb|$| & Fim da string. Com \texttt{re.MULTILINE}, fim de cada linha. \\
+        \hline
+        \verb|\b| & Fronteira de palavra, entre um caractere de palavra e um que não é. \\
+        \hline
+        \verb|\B| & Posição que não é fronteira de palavra. \\
+        \hline
+        \verb|(?=...)| & \textit{Lookahead}: exige o padrão adiante, sem consumi-lo. \\
+        \hline
+        \verb|(?!...)| & \textit{Lookahead} negativo. \\
+        \hline
+        \verb|(?<=...)| & \textit{Lookbehind}: exige algo imediatamente antes, sem consumi-lo. \\
+        \hline
+        \verb|(?<!...)| & \textit{Lookbehind} negativo. \\
+        \hline
+    \end{tabular}
+    \fonteautoria
+\end{quadro}
+
+O problema da senha forte, no Capítulo~\ref{cap:problemas}, usa \textit{lookahead} para exigir maiúscula, minúscula e dígito sem fixar a ordem desses caracteres. O mascaramento de cartão usa \textit{lookbehind} e \textit{lookahead} negativos para não cortar um número maior no meio.
+
+\section{QUANTIFICADORES}
+\label{sec:quant}
+
+O quantificador diz quantas vezes o elemento anterior pode se repetir. Por padrão ele é guloso: consome o máximo que ainda permite o restante do padrão casar. A forma preguiçosa, com um ponto de interrogação depois do quantificador, consome o mínimo.
+
+\begin{quadro}[!h]
+    \centering
+    \legenda[quad:quant]{QUANTIFICADORES E A NOTAÇÃO DA DISCIPLINA}
+    \small
+    \begin{tabular}{|p{2.2cm}|p{4.0cm}|p{7.6cm}|}
+        \hline
+        \textbf{Símbolo} & \textbf{Repetições} & \textbf{Leitura na disciplina} \\
+        \hline
+        \hline
+        \verb|*| & Zero ou mais & Fecho de Kleene \\
+        \hline
+        \verb|+| & Uma ou mais & O símbolo seguido do fecho \\
+        \hline
+        \verb|?| & Zero ou uma & O símbolo ou a cadeia vazia \\
+        \hline
+        \verb|{n}| & Exatamente \textit{n} & Concatenação repetida \textit{n} vezes \\
+        \hline
+        \verb|{n,}| & \textit{n} ou mais & \textit{n} símbolos e depois o fecho \\
+        \hline
+        \verb|{n,m}| & Entre \textit{n} e \textit{m} & União das concatenações desse intervalo \\
+        \hline
+        \verb|*?| & Mínimo, não o máximo & Forma preguiçosa do fecho \\
+        \hline
+    \end{tabular}
+    \fonteautoria
+\end{quadro}
+
+Um caso clássico é a marcação \verb|<.* >| escrita sem espaço, isto é, \verb|<.*>|: o ponto-asterisco guloso avança até o último \verb|>| da linha. A forma \verb|<.*?>| para no primeiro.
+
+\section{CLASSES DE CARACTERES}
+\label{sec:classes}
+
+A classe escolhe um caractere dentre um conjunto. O circunflexo logo após o colchete nega a classe. Fora dos colchetes, o mesmo circunflexo é a âncora de início, vista na Seção~\ref{sec:ancoras}.
+
+\begin{quadro}[!h]
+    \centering
+    \legenda[quad:classes]{CLASSES DE CARACTERES}
+    \small
+    \begin{tabular}{|p{3.4cm}|p{5.4cm}|p{5.2cm}|}
+        \hline
+        \textbf{Classe} & \textbf{Significado} & \textbf{Equivalência usual} \\
+        \hline
+        \hline
+        \verb|[abc]| & Um dos caracteres listados & união de \texttt{a}, \texttt{b} e \texttt{c} \\
+        \hline
+        \verb|[a-z], [0-9]| & Uma faixa & --- \\
+        \hline
+        \verb|[^abc]| & Qualquer caractere exceto \texttt{a}, \texttt{b} e \texttt{c} & --- \\
+        \hline
+        \verb|\d| & Dígito & \verb|[0-9]| \\
+        \hline
+        \verb|\D| & O que não é dígito & \verb|[^0-9]| \\
+        \hline
+        \verb|\w| & Caractere de palavra & \verb|[A-Za-z0-9_]| no modo ASCII \\
+        \hline
+        \verb|\W| & O que não é caractere de palavra & complemento de \verb|\w| \\
+        \hline
+        \verb|\s| & Espaço em branco & espaço, tabulação e quebra de linha \\
+        \hline
+        \verb|\S| & O que não é espaço em branco & complemento de \verb|\s| \\
+        \hline
+    \end{tabular}
+    \fonte{Elaborado pelo autor, com base em \citeonline{devmedia,pythonre}.}
+\end{quadro}
+
+No Python 3, sem a flag \texttt{re.ASCII}, \verb|\w| também casa letras Unicode, inclusive acentuadas. A equivalência com \verb|[A-Za-z0-9_]| vale no modo ASCII. Os exemplos deste trabalho usam textos sem acento nos trechos casados, então as duas leituras coincidem.
+
+\chapter{PROGRAMAÇÃO COM A BIBLIOTECA RE}
+\label{cap:re}
+
+O Python traz as expressões regulares na biblioteca padrão \texttt{re}, carregada com \texttt{import re} \cite{pythonre}. Não há pacote externo. O texto usado nos métodos abaixo é \texttt{O curso custa R\$ 1999.90 e o outro R\$ 350.00.} e o padrão dos valores é \verb|\d+\.\d{2}|.
+
+\section{MÉTODOS PRINCIPAIS}
+\label{sec:metodos}
+
+Cada método devolve um objeto de casamento, uma lista ou uma string nova. Quando não há casamento, \texttt{search}, \texttt{match} e \texttt{fullmatch} devolvem \texttt{None}.
+
+\begin{quadro}[!h]
+    \centering
+    \legenda[quad:metodos]{MÉTODOS DO MÓDULO RE USADOS NESTE TRABALHO}
+    \small
+    \begin{tabular}{|p{3.2cm}|p{10.8cm}|}
+        \hline
+        \textbf{Método} & \textbf{O que faz} \\
+        \hline
+        \hline
+        \texttt{re.search} & Procura o padrão em qualquer posição e devolve o primeiro casamento. \\
+        \hline
+        \texttt{re.match} & Igual ao \texttt{search}, mas só a partir do início da string. \\
+        \hline
+        \texttt{re.fullmatch} & Exige que a string inteira case com o padrão. \\
+        \hline
+        \texttt{re.findall} & Devolve a lista de todos os casamentos. \\
+        \hline
+        \texttt{re.finditer} & Igual ao \texttt{findall}, como iterador, com acesso ao intervalo (\textit{span}). \\
+        \hline
+        \texttt{re.sub} & Substitui cada casamento por outro texto. \\
+        \hline
+        \texttt{re.split} & Divide a string nos pontos em que o padrão casa. \\
+        \hline
+        \texttt{re.compile} & Compila o padrão uma vez para reutilizá-lo, com ou sem flags. \\
+        \hline
+    \end{tabular}
+    \fonte{Elaborado pelo autor, com base em \citeonline{pythonre}.}
+\end{quadro}
+
+O trecho a seguir foi executado com Python 3. A diferença entre \texttt{match} e \texttt{search} aparece na string \texttt{custa 1999.90}: o valor não está no início, então \texttt{match} devolve \texttt{None} e \texttt{search} devolve \texttt{1999.90}.
+
+\begin{lstlisting}[language=Python]
+import re
+
+texto = "O curso custa R$ 1999.90 e o outro R$ 350.00."
+m = re.search(r"\d+\.\d{2}", texto)
+print(m.group(), m.span())
+print(re.match(r"\d+\.\d{2}", "1999.90 reais").group())
+print(re.match(r"\d+\.\d{2}", "custa 1999.90"))
+print(re.search(r"\d+\.\d{2}", "custa 1999.90").group())
+print(re.findall(r"\d+\.\d{2}", texto))
+print(re.sub(r"\s+", " ", "um   texto   com   espacos  extras."))
+print(re.split(r"[;,]", "a;b,c;d"))
+\end{lstlisting}
+
+\begin{lstlisting}
+1999.90 (17, 24)
+1999.90
+None
+1999.90
+['1999.90', '350.00']
+um texto com espacos extras.
+['a', 'b', 'c', 'd']
+\end{lstlisting}
+
+\texttt{finditer} devolve os mesmos dois valores com as posições \texttt{(17, 24)} e \texttt{(38, 44)}. \texttt{fullmatch} no CPF \texttt{123.456.789-00}, com o padrão do Capítulo~\ref{cap:problemas}, devolve a própria string. \texttt{compile} seguido de \texttt{findall} repete a lista \texttt{['1999.90', '350.00']}.
+
+\section{GRUPOS, SUBSTITUIÇÃO E FLAGS}
+\label{sec:flags}
+
+O grupo nomeado entra na string de substituição com \verb|\g<nome>|. As flags mudam a leitura do padrão sem alterar os metacaracteres: \texttt{re.IGNORECASE} ignora maiúsculas e minúsculas, e \texttt{re.MULTILINE} faz \verb|^| e \verb|$| valerem em cada linha.
+
+\begin{lstlisting}[language=Python]
+import re
+
+print(re.sub(
+    r"(?P<ano>\d{4})-(?P<mes>\d{2})",
+    r"\g<mes>/\g<ano>",
+    "2026-08",
+))
+print(re.findall(r"ab[cs]", "Abc abC aBc", re.IGNORECASE))
+print(re.findall(r"^\w+", "linha1\nlinha2\nlinha3", re.MULTILINE))
+\end{lstlisting}
+
+\begin{lstlisting}
+08/2026
+['Abc', 'abC', 'aBc']
+['linha1', 'linha2', 'linha3']
+\end{lstlisting}
+
+\chapter{DEZ PROBLEMAS RESOLVIDOS}
+\label{cap:problemas}
+
+Cada problema traz a entrada, o padrão, o trecho em Python e a saída obtida na mesma execução do script \texttt{ed1-regex-demo.py}, reproduzido no Apêndice~\ref{ap:codigo}. Todos usam \texttt{re.fullmatch} quando a string inteira precisa ser válida, e \texttt{re.findall} ou \texttt{re.sub} quando a tarefa é extrair ou reescrever um trecho dentro de um texto maior.
+
+\section{VALIDAR CPF PELO FORMATO}
+\label{sec:cpf}
+
+O padrão aceita só duas formas completas: a pontuação oficial, com pontos e hífen, ou os onze dígitos seguidos. Separadores opcionais e independentes aceitariam misturas como \texttt{123.456789-00}, que não é nenhum dos dois formatos. Este trabalho não verifica os dígitos verificadores, apenas a forma.
+
+\begin{lstlisting}
+^(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11})$
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+import re
+pat = r"^(\d{3}\.\d{3}\.\d{3}-\d{2}|\d{11})$"
+for item in ["123.456.789-00", "12345678900", "12.3.456.789-00",
+             "123.456789-00", "ABC.DEF.GHI-JK"]:
+    print(item, "VALIDO" if re.fullmatch(pat, item) else "INVALIDO")
+\end{lstlisting}
+
+\begin{lstlisting}
+123.456.789-00 VALIDO
+12345678900 VALIDO
+12.3.456.789-00 INVALIDO
+123.456789-00 INVALIDO
+ABC.DEF.GHI-JK INVALIDO
+\end{lstlisting}
+
+\section{VALIDAR E-MAIL}
+
+O padrão exige um nome, o arroba, um domínio com pelo menos um ponto e um sufixo de duas ou mais letras. Não é a gramática completa de e-mail da internet. Cobre os casos úteis deste exercício.
+
+\begin{lstlisting}
+^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+import re
+pat = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
+for item in ["joao@abc.com", "vendas@loja.com.br", "invalido@",
+             "sem-arroba.com", "ana@site.org.br"]:
+    print(item, "VALIDO" if re.fullmatch(pat, item) else "INVALIDO")
+\end{lstlisting}
+
+\begin{lstlisting}
+joao@abc.com VALIDO
+vendas@loja.com.br VALIDO
+invalido@ INVALIDO
+sem-arroba.com INVALIDO
+ana@site.org.br VALIDO
+\end{lstlisting}
+
+\section{EXTRAIR TELEFONES DE UM TEXTO}
+
+A entrada mistura celular com DDD entre parênteses, fixo com DDD solto e um terceiro número em que o espaço separa os blocos finais.
+
+\begin{lstlisting}
+Fale com Joao no (41) 99876-5432 ou com Maria no 41 3322-1000. Fixo: (45)9812 2233.
+\end{lstlisting}
+
+A primeira alternativa lê o DDD entre parênteses, um bloco de quatro ou cinco dígitos e mais quatro. A segunda lê o DDD sem parênteses, separado por espaço.
+
+\begin{lstlisting}
+\(\d{2}\)\s?\d{4,5}[ -]?\d{4}|\d{2}\s\d{4}[ -]?\d{4}
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+import re
+texto = ("Fale com Joao no (41) 99876-5432 ou com Maria no 41 3322-1000. "
+         "Fixo: (45)9812 2233.")
+pat = r"\(\d{2}\)\s?\d{4,5}[ -]?\d{4}|\d{2}\s\d{4}[ -]?\d{4}"
+print(re.findall(pat, texto))
+\end{lstlisting}
+
+\begin{lstlisting}
+['(41) 99876-5432', '41 3322-1000', '(45)9812 2233']
+\end{lstlisting}
+
+\section{VALIDAR PLACA NO PADRÃO MERCOSUL}
+
+A placa Mercosul brasileira tem sete posições: três letras, um dígito, uma letra e dois dígitos, sem hífen. A quinta posição é letra. Um padrão que aceitasse dígito nessa posição marcaria \texttt{ABC1234} como válida, e essa cadeia é o modelo antigo sem hífen, não o Mercosul.
+
+\begin{lstlisting}
+^[A-Z]{3}\d[A-Z]\d{2}$
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+import re
+pat = r"^[A-Z]{3}\d[A-Z]\d{2}$"
+for item in ["ABC1D23", "ABC-1234", "ABC1234", "ABC1D2X", "AB1C2D3", "XYZ9A99"]:
+    print(item, "VALIDA" if re.fullmatch(pat, item) else "INVALIDA")
+\end{lstlisting}
+
+\begin{lstlisting}
+ABC1D23 VALIDA
+ABC-1234 INVALIDA
+ABC1234 INVALIDA
+ABC1D2X INVALIDA
+AB1C2D3 INVALIDA
+XYZ9A99 VALIDA
+\end{lstlisting}
+
+\section{EXTRAIR DATAS NO FORMATO DIA/MÊS/ANO}
+
+O texto de entrada é: \texttt{Prova dia 04/09/2026, entrega em 11/9/2026 e feriado 7/09. Sem data 99-99-9999.}
+
+\begin{lstlisting}
+\b\d{1,2}/\d{1,2}/\d{4}\b
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+import re
+texto = ("Prova dia 04/09/2026, entrega em 11/9/2026 e feriado 7/09. "
+         "Sem data 99-99-9999.")
+print(re.findall(r"\b\d{1,2}/\d{1,2}/\d{4}\b", texto))
+\end{lstlisting}
+
+\begin{lstlisting}
+['04/09/2026', '11/9/2026']
+\end{lstlisting}
+
+\texttt{99-99-9999} fica de fora porque o padrão exige a barra, não o hífen. \texttt{7/09} fica de fora porque não há ano com quatro dígitos. A âncora \verb|\b| tem outro papel: impedir que a data seja lida no meio de uma palavra. Ela não é o que rejeita a cadeia com hífen.
+
+\section{VALIDAR CEP}
+
+O CEP tem oito dígitos. O hífen depois do quinto é opcional, mas, se aparecer, precisa estar nessa posição. \texttt{8120-0100} tem o hífen no lugar errado e é recusado.
+
+\begin{lstlisting}
+^\d{5}-?\d{3}$
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+import re
+pat = r"^\d{5}-?\d{3}$"
+for item in ["81200-100", "81200100", "8120-0100", "8120010"]:
+    print(item, "VALIDO" if re.fullmatch(pat, item) else "INVALIDO")
+\end{lstlisting}
+
+\begin{lstlisting}
+81200-100 VALIDO
+81200100 VALIDO
+8120-0100 INVALIDO
+8120010 INVALIDO
+\end{lstlisting}
+
+\section{SENHA FORTE}
+
+A senha precisa ter pelo menos oito caracteres, uma maiúscula, uma minúscula e um dígito. Três \textit{lookaheads} testam essas exigências sem consumir a string. O \verb|.{8,}| só então lê o tamanho. A ordem das letras dentro da senha deixa de importar.
+
+\begin{lstlisting}
+^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+import re
+pat = r"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{8,}$"
+for item in ["abc123", "SenhaForte1", "SENHA123", "senha123", "S3nha.Forte!"]:
+    print(item, "OK" if re.fullmatch(pat, item) else "FALHOU")
+\end{lstlisting}
+
+\begin{lstlisting}
+abc123 FALHOU
+SenhaForte1 OK
+SENHA123 FALHOU
+senha123 FALHOU
+S3nha.Forte! OK
+\end{lstlisting}
+
+\texttt{abc123} falha pelo tamanho e pela falta de maiúscula. \texttt{SENHA123} não tem minúscula. \texttt{senha123} não tem maiúscula.
+
+\section{REMOVER ESPAÇOS EXTRAS}
+
+A entrada repete espaços no meio da frase e ainda deixa espaços no final, como mostra o código abaixo. \verb|\s+| casa cada sequência de branco. \texttt{re.sub} troca essa sequência por um espaço só. O \texttt{strip} tira o espaço que sobra nas pontas. Sem o \texttt{strip}, a frase limpa ainda terminaria em espaço.
+
+\begin{lstlisting}[language=Python]
+import re
+entrada = "A  aula    de   Regex   sera  as   10h,    na sala   B-2.   "
+print(re.sub(r"\s+", " ", entrada).strip())
+\end{lstlisting}
+
+\begin{lstlisting}
+A aula de Regex sera as 10h, na sala B-2.
+\end{lstlisting}
+
+\section{EXTRAIR URLS DE UM TEXTO}
+
+O padrão exige o esquema \texttt{http} ou \texttt{https}. Por isso \texttt{www.uol.com.br}, presente na entrada, não entra no resultado. A classe final evita puxar o ponto que apenas encerra a frase.
+
+\begin{lstlisting}
+https?://[\w.-]+\.\w+(?:[/?#][^\s.,;]*)?
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+import re
+entrada = ("Veja https://www.devmedia.com.br/iniciando-expressoes-regulares/6557 "
+           "e http://example.com.br/aula?x=1. Site: www.uol.com.br")
+pat = r"https?://[\w.-]+\.\w+(?:[/?#][^\s.,;]*)?"
+print(re.findall(pat, entrada))
+\end{lstlisting}
+
+\begin{lstlisting}
+['https://www.devmedia.com.br/iniciando-expressoes-regulares/6557', 'http://example.com.br/aula?x=1']
+\end{lstlisting}
+
+\section{MASCARAR O NÚMERO DO CARTÃO}
+
+A entrada traz dois cartões, um separado por espaços e outro por hífens. Quatro grupos capturam os blocos. A substituição conserva só o quarto grupo, que são os quatro últimos dígitos. O \textit{lookbehind} e o \textit{lookahead} negativos exigem que o bloco não esteja colado em outro dígito.
+
+\begin{lstlisting}
+(?<!\d)(\d{4})[ -]?(\d{4})[ -]?(\d{4})[ -]?(\d{4})(?!\d)
+\end{lstlisting}
+
+\begin{lstlisting}[language=Python]
+import re
+entrada = "Cartao 5123 4678 9012 3456 aprovado; outro 9876-5432-1098-7654 negado."
+pat = r"(?<!\d)(\d{4})[ -]?(\d{4})[ -]?(\d{4})[ -]?(\d{4})(?!\d)"
+print(re.sub(pat, r"**** **** **** \4", entrada))
+\end{lstlisting}
+
+\begin{lstlisting}
+Cartao **** **** **** 3456 aprovado; outro **** **** **** 7654 negado.
+\end{lstlisting}
+
+Os dez problemas usam só os operadores do Capítulo~\ref{cap:regex}: classe, quantificador, agrupamento, alternância e âncora. A programação se resume aos métodos do Capítulo~\ref{cap:re}. O que muda de um problema para o outro é o padrão, não a biblioteca.
+
+\apendices
+
+\chapter{CÓDIGO-FONTE COMPLETO}
+\label{ap:codigo}
+
+O arquivo \texttt{material/exercicios/ed1-regex-demo.py} gera, numa única execução, as saídas citadas nos Capítulos~\ref{cap:re} e~\ref{cap:problemas}.
+
+\lstinputlisting[language=Python]{../../material/exercicios/ed1-regex-demo.py}
+
+\postextual
+\bibliography{referencias}
+
+\end{document}
