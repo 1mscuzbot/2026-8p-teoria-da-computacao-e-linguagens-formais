@@ -14,6 +14,9 @@
 - [Aula 04 — Transições nulas (ε): união, concatenação, fechamento e NFA-ε → NFA](notas/estudo-aula04-transicoes-nulas.md)
 - [Aula 05 — NFA → DFA (determinização)](notas/estudo-aula05-nfa-para-dfa.md)
 - [Revisão rápida — prova (AF / ε / NFA→DFA)](notas/revisao-rapida-prova-hoje.md)
+- [Aula 13 — Gramática Regular (GR)](notas/estudo-aula13-gr.md)
+- [Aula 14 — Forma Normal de Chomsky (FNC)](notas/estudo-aula14-fnc.md)
+- [Revisão — Aulas 11–14 (Gramáticas → FNC)](notas/revisao-aulas-11-14-gramaticas-fnc.md) · [outline de slides](notas/revisao-aulas-11-14-slides-outline.md)
 - [NFAs visuais — Aula 03 (HTML)](notas/nfas-visuais-aula03.html) · imagem: `notas/teoria-nfas-aula03-visual.png`
 - [Visuais Aula 04 — ε (HTML)](notas/nfas-visuais-aula04.html) · imagem: `notas/teoria-aula04-eps-visual.png`
 - [Visuais Aula 05 — NFA→DFA (HTML)](notas/nfas-visuais-aula05.html) · imagem: `notas/teoria-aula05-dfa-visual.png`
