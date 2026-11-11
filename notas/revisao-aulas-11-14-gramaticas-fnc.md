@@ -50,6 +50,62 @@ Exemplos clássicos: `{aⁿbⁿ | n≥0}`, palíndromos, parênteses balanceados
 
 ---
 
+## Cola rápida (FNC — prova hoje)
+
+### Definição (decorar)
+
+Toda produção: **`A → BC`** (2 variáveis) **ou** **`A → a`** (1 terminal).  
+AS resultante = **binária**.
+
+### Passos (ordem fixa)
+
+1. **Simplificar** (inúteis, ε, unitárias) — se o enunciado já veio “limpo”, pule.
+2. **Δ:** em RHS com `|RHS| > 1`, **zero terminais**. Para cada terminal `t` misturado → criar `Xₜ → t` e trocar `t` por `Xₜ`. Produções já `A → t` **ficam**.
+3. **Ω:** em RHS com `|RHS| > 1`, **exatamente 2** variáveis. Se `A → V₁V₂…Vₖ` (`k≥3`), criar auxiliares que engolem 2 por vez (ex.: `A → V₁V₂V₃` → `A → V₁Ω`, `Ω → V₂V₃`).
+
+### Exemplo completo (do slide)
+
+```text
+P → APB | Ca          A → AaaA | b
+B → BBb | aC          C → cC | d
+```
+
+**Δ** (`X→a`, `Y→b`, `Z→c`):
+
+```text
+P → APB | CX     A → AXXA | b
+B → BBY | XC     C → ZC | d
+```
+
+**Ω** (`K→AP`, `L→AX`, `M→XA`, `N→BB`):
+
+```text
+P → KB | CX      A → LM | b      B → NY | XC      C → ZC | d
+X → a  Y → b  Z → c
+K → AP  L → AX  M → XA  N → BB
+```
+
+### Armadilhas clássicas
+
+| Erro | Por quê |
+|------|---------|
+| Fazer Ω antes de Δ | RHS ainda tem terminais → não fica em FNC |
+| Deixar `A → aB` | misturou terminal + variável (falhou Δ) |
+| Deixar `A → ABC` | 3 variáveis (falhou Ω) |
+| Criar `Δ` para `A → a` sozinha | desnecessário; `A→a` **já** é FNC |
+| Esquecer auxiliares novas no conjunto final | a gramática fica incompleta |
+| Inverter ordem dos pares em Ω | linguagem muda — escolha um esquema e seja consistente |
+| Tratar `ε` sem simplificar | FNC “padrão” do slide assume GLC já sem ε/unitárias |
+
+### Mini checklist na prova
+
+- [ ] Só `A→BC` ou `A→a`?
+- [ ] Ordem: simplificar → Δ → Ω?
+- [ ] Toda variável auxiliar tem produção definida?
+- [ ] Testei uma palavra curta mentalmente (derivação)?
+
+---
+
 ## Bullets estilo prova
 
 - [ ] Diferenciar **GR** (regular) de **GLC** (livre de contexto): `S→aSb` é GLC, **não** GR.
