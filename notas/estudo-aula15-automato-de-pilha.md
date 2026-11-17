@@ -110,3 +110,9 @@ Para `L = { aⁿbⁿ | n ≥ 1 }`: empilhar nos `a`s, desempilhar nos `b`s; no f
 - [ ] Ler `emp` / `des` / `ε` / `?` num arco
 - [ ] Esboçar AP para `aⁿbⁿ` e para parênteses
 - [ ] Explicar por que `aⁿbⁿcⁿ` não tem AP
+
+---
+
+## Cola 1 página
+
+Diagramas ASCII dos ex. 0.5–5 (notação `e(N)`/`d(N)`, `?/?`): [cola-aula15-pda-prova.md](cola-aula15-pda-prova.md).
