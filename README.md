@@ -17,6 +17,9 @@
 - [Aula 13 — Gramática Regular (GR)](notas/estudo-aula13-gr.md)
 - [Aula 14 — Forma Normal de Chomsky (FNC)](notas/estudo-aula14-fnc.md)
 - [Aula 15 — Autômato de Pilha (AP)](notas/estudo-aula15-automato-de-pilha.md)
+- [Cola — Aula 15 PDA (prova)](notas/cola-aula15-pda-prova.md)
+- [Aula 15 — Ex. 9 (`aⁿ⁺ᵐbᵐaⁿ`)](notas/teoria-aula15-ex9.md)
+- [Aula 15 — PDA `aᵐbᵐ⁺ᵖcᵖ`](notas/teoria-aula15-am-bmp-cp.md)
 - [Revisão — Aulas 11–14 (Gramáticas → FNC)](notas/revisao-aulas-11-14-gramaticas-fnc.md) · [outline de slides](notas/revisao-aulas-11-14-slides-outline.md)
 - [NFAs visuais — Aula 03 (HTML)](notas/nfas-visuais-aula03.html) · imagem: `notas/teoria-nfas-aula03-visual.png`
 - [Visuais Aula 04 — ε (HTML)](notas/nfas-visuais-aula04.html) · imagem: `notas/teoria-aula04-eps-visual.png`

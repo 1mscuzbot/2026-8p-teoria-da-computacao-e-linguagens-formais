@@ -94,7 +94,7 @@ Para `L = { aⁿbⁿ | n ≥ 1 }`: empilhar nos `a`s, desempilhar nos `b`s; no f
 6. `L = {aⁿcᵐb²ⁿ | n,m≥1}`  
 7. `L = {w·wʳ | w ∈ {a,b}*}`  
 8. Nº de `a`s = nº de `b`s  
-9. `L = {aⁿ⁺ᵐbᵐaⁿ | n,m≥0}`  
+9. `L = {aⁿ⁺ᵐbᵐaⁿ | n,m≥0}` — resolução: [teoria-aula15-ex9.md](teoria-aula15-ex9.md)  
 10. `L = {ε}`  
 11. Palavras de tamanho par sobre `{a,b}`  
 12. Parênteses e colchetes casados  
@@ -110,3 +110,9 @@ Para `L = { aⁿbⁿ | n ≥ 1 }`: empilhar nos `a`s, desempilhar nos `b`s; no f
 - [ ] Ler `emp` / `des` / `ε` / `?` num arco
 - [ ] Esboçar AP para `aⁿbⁿ` e para parênteses
 - [ ] Explicar por que `aⁿbⁿcⁿ` não tem AP
+
+---
+
+## Cola 1 página
+
+Diagramas ASCII dos ex. 0.5–5 (notação `e(N)`/`d(N)`, `?/?`): [cola-aula15-pda-prova.md](cola-aula15-pda-prova.md).
