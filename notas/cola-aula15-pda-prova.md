@@ -5,7 +5,8 @@
 **Notação Furlan:** arco `λ / α` · `e(N)`/`emp(N)` empilha · `d(N)`/`des(N)` desempilha · `?` = fim de fita **ou** pilha vazia · `ε` = não lê / não mexe · aceita com **`?/?`** em estado final.
 
 ## Checklist mental
-- [ ] Empilha numa fase, desempilha na outra (LIFO).
+- [ ] Empilha/desempilha conforme o **topo** (LIFO) — ordem mista ≠ fases rígidas.
+- [ ] Distinguir **`aⁿbⁿ`** (bloco) de **`|a|=|b|`** (misturado: `abab`, `baab`).
 - [ ] `n,m≥1` ⇒ troca de estado no **1º** símbolo da próxima letra (**sem** `ε/ε` livre entre fases).
 - [ ] Parênteses: no caderno há **`ε/ε`** entre fases (ex.3).
 - [ ] `i≠j`: dois finais **F1** (sobra na pilha) e **F2** (`b` com pilha vazia).
@@ -18,7 +19,9 @@
 > (q0) --a,ε--> (q1) --b,ε--> ((qf))
 ```
 
-## 1 — `L={aⁿbⁿ | n≥1}`
+## 1 — Dois lados: `aⁿbⁿ` vs `|a|=|b|`
+
+### 1A — `L={aⁿbⁿ | n≥1}` *(só bloco: aaa…bbb…)*
 ```text
 > (1) --a/e(N)--> (1)
    │ b/d(N)
@@ -28,7 +31,42 @@
    ▼
  ((0)) FINAL
 ```
-Ex.: `aaabbb` — empilha 3×`N`, desempilha 3×, `?/?`.
+Aceita `aaabbb`. **Rejeita** `abab`, `baab` (ordem errada).
+
+### 1B — `L={ w | #a(w)=#b(w) }` *(qualquer ordem)*
+Mesma ideia de **dívida**: empilha o que sobra; o outro cancela.
+- Lê `a` com topo `B` → `d(B)`; senão → `e(A)`
+- Lê `b` com topo `A` → `d(A)`; senão → `e(B)`
+- Fim + pilha vazia → `?/?`
+
+```text
+              a/e(A)          b/e(B)
+              b/d(A)          a/d(B)
+         ┌──────────────────────────┐
+         │                          │
+         ▼                          │
+        > (q) ──────────────────────┘
+          │
+          │  ?/?     ← fim E pilha vazia
+          ▼
+        ((f)) FINAL
+```
+
+Arcos (um estado de trabalho):
+- `q --a/e(A)--> q` · `q --a/d(B)--> q`
+- `q --b/e(B)--> q` · `q --b/d(A)--> q`
+- `q --?/?--> ((f))`
+
+| Palavra | Pilha (topo→) | Resultado |
+|---------|---------------|-----------|
+| `abab` | A → ε → B → ε | aceita |
+| `baab` | B → ε → A → ε | aceita |
+| `aabb` | A A → A → ε | aceita (= `aⁿbⁿ`) |
+| `abb` | A → ε → B | rejeita (`?/?` não dispara) |
+
+**Diferença:** `aⁿbⁿ` ⊂ `|a|=|b|`. Se a prova pedir **número igual**, use **1B**. Se pedir **bloco** `aⁿbⁿ`, use **1A**.
+
+---
 
 ## 2 — `S → aSa | b` → PDA
 Palíndromo ímpar com `b` no meio (`aba`, `aabaa`…).
@@ -52,7 +90,8 @@ Palíndromo ímpar com `b` no meio (`aba`, `aabaa`…).
    ▼
  ((0))
 ```
-**Compacto (docs):** um só estado com `(/e(N)` e `)/d(N)` + `?/?` — aceita `()()` e `((()))`.
+**Compacto (docs):** um só estado com `(/e(N)` e `)/d(N)` + `?/?` — aceita `()()` e `((()))`.  
+*(Parênteses ≈ mesmo espírito de `|a|=|b|`, com tipos `(`/`)`.)*
 
 ## 4 — `L={aⁿbᵐcᵐdⁿ | n,m≥1}`
 Sem `ε/ε` entre letras. Preferir **N** (a/d) e **M** (b/c); no caderno b/c pode parecer só `N`.
@@ -91,7 +130,7 @@ Caderno: F1 às vezes `?/d(N)`; F2 fecha com `?/ε`. **i=j** → não chega a fi
 ---
 
 ## Gatilhos de prova
-1. Desenhar AP de `aⁿbⁿ` ou parênteses com `e/d` + `?/?`.
+1. Desenhar AP de **`|a|=|b|`** (1B) **ou** `aⁿbⁿ` (1A) — não confundir.
 2. Gramática `S→aSa|b` → PDA (meio `b/ε`).
 3. `aⁿbᵐcᵐdⁿ` em 4 fases (troca no 1º símbolo).
 4. `i≠j` com **dois** finais F1/F2.
