@@ -4,7 +4,7 @@
 **Autor:** Lucas Müller Scuzziato  
 **Enunciado:** `projetos/ED2/LFA-EstudoDirigido2.pdf`  
 **Entrega ABNT:** `projetos/ED2/ed2-p-np-mochila.tex` → `ed2-p-np-mochila.pdf`  
-**Código:** `material/exercicios/ed2-mochila.py`  
+**Código:** `ed2-mochila.py`  
 **Prazo do enunciado:** até 28/nov/2026
 
 ---
@@ -44,8 +44,7 @@ Resumo no PDF (cap. 5): heurística sem garantia; guloso rápido (ótimo na moch
 
 ### Como validar
 ```bash
-python3 material/exercicios/ed2-mochila.py \
-  --grafico projetos/ED2/figuras/mochila-tempos.png
+python3 ed2-mochila.py --grafico mochila-tempos.png
 ```
 FB e PD devem coincidir; guloso pode divergir (ex.: n=22 nos testes).
 
