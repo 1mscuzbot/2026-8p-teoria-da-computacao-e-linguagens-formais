@@ -18,15 +18,13 @@
 \usepackage{packages/abnt-UTP}
 \graphicspath{{figuras/}}
 
+% Capa no mesmo modelo do AV2 de Computação Gráfica (estilo-utp-estudo):
+% instituição → autor → título → local/ano. Dados: Teoria + título do ED.
 \renewcommand{\imprimircapa}{%
     \begin{capa}%
-        \center
+        \centering
         {\bfseries\large\MakeUppercase{\imprimirinstituicao}\par}
-        \vspace{0.4cm}
-        {\bfseries\large\MakeUppercase{Faculdade de Ciências Exatas e de Tecnologia}\par}
-        \vspace{0.4cm}
-        {\bfseries\large\MakeUppercase{Bacharelado em Ciência da Computação}\par}
-        \vspace*{1cm}
+        \vspace*{2.2cm}
 
         {\bfseries\large\MakeUppercase{\imprimirautor}\par}
         \vfill
@@ -34,14 +32,8 @@
         {\bfseries\large\MakeUppercase{\imprimirtitulo}\par}
         \vfill
 
-        {\bfseries\large\MakeUppercase{Estudo Dirigido --- 2º bimestre}\par}
-        \vspace{0.4cm}
-        {\bfseries\large\MakeUppercase{Teoria da Computação e Linguagens Formais}\par}
-        \vspace{0.4cm}
-        {\bfseries\large\MakeUppercase{Prof. Diógenes Cogo Furlan}\par}
-        \vfill
-
         {\bfseries\large\MakeUppercase{\imprimirlocal}\par}
+        \vspace*{0.2cm}
         {\bfseries\large\MakeUppercase{\imprimirdata}\par}
     \end{capa}
 }
@@ -52,7 +44,8 @@
 \autor{Lucas Müller Scuzziato}
 \instituicao{Universidade Tuiuti do Paraná}
 \local{Curitiba}
-\data{2026}
+\data{\the\year}
+\preambulo{Estudo Dirigido 2 --- Teoria da Computação e Linguagens Formais (Prof.\ Diógenes Cogo Furlan).}
 
 \begin{document}
 
