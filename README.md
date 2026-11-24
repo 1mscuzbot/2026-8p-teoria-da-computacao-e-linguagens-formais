@@ -22,6 +22,7 @@
 - [Visuais Aula 04 — ε (HTML)](notas/nfas-visuais-aula04.html) · imagem: `notas/teoria-aula04-eps-visual.png`
 - [Visuais Aula 05 — NFA→DFA (HTML)](notas/nfas-visuais-aula05.html) · imagem: `notas/teoria-aula05-dfa-visual.png`
 - [ED1 — Expressões Regulares (REGEX)](notas/ED1-regex.md) · documento ABNT: `projetos/ED1/ed1-regex.tex` · script: `material/exercicios/ed1-regex-demo.py`
+- [ED2 — P/NP e Mochila 0/1](notas/ED2-p-np-mochila.md) · documento ABNT: `projetos/ED2/ed2-p-np-mochila.tex` · script: `material/exercicios/ed2-mochila.py`
 
 ## Arquivos recentes
 | Arquivo | Descrição |
